@@ -1,4 +1,5 @@
-/* =====================================================================
+    stage.style.setProperty('--plants', plants.length || 1);
+    stage.classList.toggle('is-futuro', state.scenario === 'futuro');/* =====================================================================
    ES Metals — Aplicación
    ---------------------------------------------------------------------
    Estado: escenario activo, línea de negocio activa (futuro),

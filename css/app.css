@@ -496,3 +496,12 @@ button { font: inherit; color: inherit; }
 .node-shape-double { fill: none; stroke: #b3bec8; stroke-width: 1; pointer-events: none; }
 .node.is-active .node-shape-double, .node.is-hover .node-shape-double { stroke: var(--blue-dark); }
 .nav-row .nav-plant { font-size: 13.5px; padding: 3px 12px; }
+
+/* ESM 3 (escenario futuro): trazos más finos para que el diagrama respire */
+.stage.is-futuro .flow-frame { stroke-width: 1; }
+.stage.is-futuro .flow-line  { stroke-width: 1; }
+.stage.is-futuro .flow-halo  { stroke-width: 4; }
+.stage.is-futuro .flow-head  { transform-box: fill-box; }
+.stage.is-futuro .flow-frame.is-lit, .stage.is-futuro .flow-frame.is-pinned { stroke-width: 1.5; }
+.stage.is-futuro .flow-arrow.is-lit .flow-line, .stage.is-futuro .flow-arrow.is-pinned .flow-line { stroke-width: 1.5; }
+.stage.is-futuro .flow-badge-bg { stroke-width: 1; }
