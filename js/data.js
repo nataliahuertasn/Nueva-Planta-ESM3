@@ -59,7 +59,7 @@ ESM.data = {
           { plant: 'esm3', area: 'e3-cortadora-perfiles' },
           { plant: 'esm3', area: 'e3-cnc-perfiles' },
           { plant: 'esm3', area: 'e3-soldadura' },
-          { plant: 'esm3', area: 'e3-pintura-polvo' },
+          { plant: 'esm3', areas: ['e3-pintura-liquida', 'e3-pintura-polvo'], name: 'Pintura (líquida o en polvo)' },
           { plant: 'esm3', area: 'e3-ensamble' },
           { plant: 'esm3', area: 'e3-logistica' }
         ],
@@ -81,7 +81,7 @@ ESM.data = {
           { plant: 'esm3', area: 'e3-cnc-lamina' },
           { plant: 'esm3', area: 'e3-dobladora' },
           { plant: 'esm3', area: 'e3-soldadura' },
-          { plant: 'esm3', area: 'e3-pintura-polvo' },
+          { plant: 'esm3', areas: ['e3-pintura-liquida', 'e3-pintura-polvo'], name: 'Pintura (líquida o en polvo)' },
           { plant: 'esm3', area: 'e3-sublimado-lamina' },
           { plant: 'esm3', area: 'e3-ensamble' },
           { plant: 'esm3', area: 'e3-logistica' }
@@ -107,7 +107,7 @@ ESM.data = {
         { plant: 'esm3', area: 'e3-enderezadora' },
         { plant: 'esm3', area: 'e3-dobladora' },
         { plant: 'esm3', area: 'e3-soldadura' },
-        { plant: 'esm3', area: 'e3-pintura-polvo' },
+        { plant: 'esm3', areas: ['e3-pintura-liquida', 'e3-pintura-polvo'], name: 'Pintura (líquida o en polvo)' },
         { plant: 'esm3', area: 'e3-ensamble' },
         { plant: 'esm3', area: 'e3-logistica' }
       ],
@@ -127,7 +127,7 @@ ESM.data = {
         { plant: 'esm3', area: 'e3-almacen-perfiles' },
         { plant: 'esm3', area: 'e3-cortadora-perfiles' },
         { plant: 'esm3', area: 'e3-cnc-perfiles' },
-        { plant: 'esm3', area: 'e3-pintura-polvo' },
+        { plant: 'esm3', areas: ['e3-pintura-liquida', 'e3-pintura-polvo'], name: 'Pintura (líquida o en polvo)' },
         { plant: 'esm3', area: 'e3-ensamble' },
         { plant: 'esm3', area: 'e3-logistica' }
       ],
@@ -146,7 +146,7 @@ ESM.data = {
         { plant: 'esm3', area: 'e3-cortadora-perfiles' },
         { plant: 'esm3', area: 'e3-cnc-perfiles' },
         { plant: 'esm3', area: 'e3-ensamble' },
-        { plant: 'esm3', area: 'e3-pintura-polvo' },
+        { plant: 'esm3', areas: ['e3-pintura-liquida', 'e3-pintura-polvo'], name: 'Pintura (líquida o en polvo)' },
         { plant: 'esm3', area: 'e3-logistica' }
       ],
       route: [
@@ -165,7 +165,7 @@ ESM.data = {
         route3: [
           { plant: 'esm3', area: 'e3-almacen-perfiles' },
           { plant: 'esm3', area: 'e3-cortadora-perfiles' },
-          { plant: 'esm3', area: 'e3-pintura-liquida' },
+          { plant: 'esm3', areas: ['e3-pintura-liquida', 'e3-pintura-polvo'], name: 'Pintura (líquida o en polvo)' },
           { plant: 'esm3', area: 'e3-ensamble' },
           { plant: 'esm3', area: 'e3-logistica' }
         ],
