@@ -181,6 +181,8 @@ ESM.data = {
         route3: [
           { plant: 'esm3', area: 'e3-almacen-hpl' },
           { plant: 'esm3', area: 'e3-sierra-vertical' },
+          { plant: 'esm3', area: 'e3-cnc-lamina-hpl' },
+          { plant: 'esm3', area: 'e3-planks' },
           { plant: 'esm3', area: 'e3-ensamble-hpl' },
           { plant: 'esm3', area: 'e3-logistica-hpl' }
         ],
