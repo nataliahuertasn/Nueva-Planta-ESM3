@@ -198,8 +198,8 @@ ESM.data = {
           { plant: 'esm3', area: 'e3-cortadora-perfiles' },
           { plant: 'esm3', area: 'e3-cnc-perfiles' },
           { plant: 'esm3', area: 'e3-pintura-polvo' },
-          { plant: 'esm3', area: 'e3-ensamble' },
           { plant: 'esm3', area: 'e3-sublimado-perfiles' },
+          { plant: 'esm3', area: 'e3-ensamble' },
           { plant: 'esm3', area: 'e3-logistica' }
         ],
       route: [
