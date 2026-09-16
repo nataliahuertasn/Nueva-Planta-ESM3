@@ -505,3 +505,8 @@ button { font: inherit; color: inherit; }
 .stage.is-futuro .flow-frame.is-lit, .stage.is-futuro .flow-frame.is-pinned { stroke-width: 1.5; }
 .stage.is-futuro .flow-arrow.is-lit .flow-line, .stage.is-futuro .flow-arrow.is-pinned .flow-line { stroke-width: 1.5; }
 .stage.is-futuro .flow-badge-bg { stroke-width: 1; }
+
+/* ESM 3: sin flechas; los pasos se muestran numerados y con un tinte suave */
+.stage.is-futuro .flow-links { display: none; }
+.stage.is-futuro .flow-frame { fill: var(--flow-soft); fill-opacity: 0.28; }
+.stage.is-futuro .flow-frame.is-lit, .stage.is-futuro .flow-frame.is-pinned { fill: var(--flow); fill-opacity: 0.16; }
