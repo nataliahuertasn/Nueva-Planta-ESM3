@@ -43,7 +43,11 @@ ESM.data = {
 
     /* Se incorporarán en las siguientes etapas */
     esm2: ESM.plants.esm2,
-    esm3: ESM.plants.esm3
+    esm3: ESM.plants.esm3,
+    /* Propuesta 2 de ESM 3: tres plantas independientes */
+    esm3a: ESM.plants.esm3a,
+    esm3b: ESM.plants.esm3b,
+    esm3c: ESM.plants.esm3c
   },
 
   /* Líneas de negocio y productos.

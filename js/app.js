@@ -12,6 +12,7 @@
   const state = {
     scenario: 'actual',
     focusPlant: null,  // planta destacada dentro del escenario (la otra se atenúa)
+    proposal: 'mega',  // ESM 3: 'mega' (Propuesta 1) | 'tres' (Propuesta 2)
     line: null,        // id de línea de negocio activa
     products: [],      // ids de los productos (flujos) activos dentro de la línea
     selected: null,    // { plant, id }
@@ -105,7 +106,19 @@
 
   /* Recorrido de un producto en el escenario activo (actual: route · futuro: route3) */
   function routeOf(product) {
-    return (state.scenario === 'futuro' ? product.route3 : product.route) || [];
+    if (state.scenario !== 'futuro') return product.route || [];
+    const r3 = product.route3 || [];
+    if (state.proposal !== 'tres') return r3;
+    // Propuesta 2: el paso va a la planta que tiene el proceso; si está en
+    // varias, se queda en la planta del paso anterior (traslados mínimos)
+    let prev = null;
+    return r3.map(step => {
+      const areas = step.areas || [step.area];
+      const has = pid => areas.every(a => D.plants[pid].areas.some(x => x.id === a));
+      const pid = (prev && has(prev)) ? prev : (THREE.find(has) || prev || THREE[0]);
+      prev = pid;
+      return Object.assign({}, step, { plant: pid });
+    });
   }
 
   /* Áreas que cubre un paso: área, alternativas (areas) o grupo de la planta */
@@ -127,9 +140,11 @@
   }
 
   /* ---------- Escenario: plantas listas del escenario activo ---------- */
+  const THREE = ['esm3a', 'esm3b', 'esm3c'];   // Propuesta 2 de ESM 3
   function readyPlants() {
     const sc = D.scenarios.find(s => s.id === state.scenario);
-    return sc.plants.map(id => D.plants[id]).filter(p => p.status === 'ready');
+    const ids = (sc.id === 'futuro' && state.proposal === 'tres') ? THREE : sc.plants;
+    return ids.map(id => D.plants[id]).filter(p => p && p.status === 'ready');
   }
 
   function renderStage() {
@@ -139,6 +154,7 @@
     const plants = readyPlants();
     stage.style.setProperty('--plants', plants.length || 1);
     stage.classList.toggle('is-futuro', state.scenario === 'futuro');
+    if (state.scenario === 'futuro') stage.appendChild(proposalSwitch());
 
     plants.forEach(p => {
       const card = h('section', 'plant-card' + (state.focusPlant && state.focusPlant !== p.id ? ' is-muted' : ''));
@@ -167,6 +183,20 @@
 
       stage.appendChild(card);
     });
+  }
+
+  /* Propuesta 1 (mega planta) / Propuesta 2 (tres plantas) para ESM 3 */
+  function proposalSwitch() {
+    const bar = h('div', 'proposal-bar');
+    [['mega', 'Propuesta 1', 'Mega planta integrada'], ['tres', 'Propuesta 2', 'Tres plantas independientes']].forEach(([id, name, desc]) => {
+      const b = h('button', 'proposal' + (state.proposal === id ? ' is-active' : ''));
+      b.type = 'button';
+      b.appendChild(h('span', 'proposal-name', name));
+      b.appendChild(h('span', 'proposal-desc', desc));
+      b.addEventListener('click', () => { if (state.proposal !== id) { state.proposal = id; render(); } });
+      bar.appendChild(b);
+    });
+    return bar;
   }
 
   /* Máquinas rotuladas + maquinaria dibujada dentro de áreas (symbol / benches) */

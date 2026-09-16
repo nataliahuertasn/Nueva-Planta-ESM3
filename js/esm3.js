@@ -82,4 +82,56 @@ ESM.plants = ESM.plants || {};
       box('e3-logistica-hpl', 'Logística', 2, 11, { double: true })
     ]
   };
+
+  /* =====================================================================
+     Propuesta 2 — tres plantas independientes (misma retícula de filas)
+     Planta 1: línea de lámina · Planta 2: línea de perfiles ·
+     Planta 3: línea de lámina HPL. Los procesos compartidos se repiten en
+     la planta donde tienen más sentido (Soldadura solo en Planta 1).
+     ===================================================================== */
+  const PW = X0 + W + X0;   // ancho de cada planta: una sola columna
+  function smallPlant(id, name, boxes) {
+    return {
+      id, name, short: name, status: 'ready', hideCounts: true,
+      subtitle: 'Propuesta 2 · tres plantas',
+      note: 'Distribución conceptual. Sin escala.',
+      canvas: { w: PW, h: 848 }, perimeter: { x: 0, y: 0, w: PW, h: 848 },
+      annotations: [], areas: boxes
+    };
+  }
+
+  ESM.plants.esm3a = smallPlant('esm3a', 'Planta 1', [
+    box('e3-almacen-lamina', 'Almacén / lámina', 0, 0),
+    box('e3-punzonado', 'Punzonado', 0, 1),
+    box('e3-laser-lamina', 'Láser lámina', 0, 2),
+    box('e3-enderezadora', 'Enderezadora', 0, 3),
+    box('e3-cnc-lamina', 'Mecanizado CNC / lámina', 0, 4),
+    box('e3-dobladora', 'Dobladora', 0, 5),
+    box('e3-soldadura', 'Soldadura', 0, 6, { double: true }),
+    box('e3-pintura-liquida', 'Pintura líquida', 0, 7, { double: true }),
+    box('e3-pintura-polvo', 'Pintura en polvo', 0, 8, { double: true }),
+    box('e3-sublimado-lamina', 'Sublimado / lámina', 0, 9),
+    box('e3-ensamble', 'Ensamble', 0, 10, { double: true }),
+    box('e3-logistica', 'Logística', 0, 11, { double: true })
+  ]);
+
+  ESM.plants.esm3b = smallPlant('esm3b', 'Planta 2', [
+    box('e3-almacen-perfiles', 'Almacén / perfiles', 0, 0),
+    box('e3-cortadora-perfiles', 'Cortadora de / perfiles', 0, 1),
+    box('e3-cnc-perfiles', 'Mecanizado CNC / perfiles', 0, 2),
+    box('e3-pintura-liquida', 'Pintura líquida', 0, 7, { double: true }),
+    box('e3-pintura-polvo', 'Pintura en polvo', 0, 8, { double: true }),
+    box('e3-sublimado-perfiles', 'Sublimado / perfiles', 0, 9),
+    box('e3-ensamble', 'Ensamble', 0, 10, { double: true }),
+    box('e3-logistica', 'Logística', 0, 11, { double: true })
+  ]);
+
+  ESM.plants.esm3c = smallPlant('esm3c', 'Planta 3', [
+    box('e3-almacen-hpl', 'Almacén / lámina HPL', 0, 0),
+    box('e3-sierra-vertical', 'Sierra vertical', 0, 1),
+    box('e3-cnc-lamina-hpl', 'Mecanizado CNC / lámina', 0, 4),
+    box('e3-planks', 'Mecanizado / planks', 0, 5),
+    box('e3-ensamble-hpl', 'Ensamble', 0, 10, { double: true }),
+    box('e3-logistica-hpl', 'Logística', 0, 11, { double: true })
+  ]);
 })();

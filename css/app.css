@@ -510,3 +510,25 @@ button { font: inherit; color: inherit; }
 .stage.is-futuro .flow-links { display: none; }
 .stage.is-futuro .flow-frame { fill: var(--flow-soft); fill-opacity: 0.28; }
 .stage.is-futuro .flow-frame.is-lit, .stage.is-futuro .flow-frame.is-pinned { fill: var(--flow); fill-opacity: 0.16; }
+
+/* ---------- ESM 3: selector de propuesta (mega planta / tres plantas) ---------- */
+.stage.is-futuro { grid-template-rows: auto minmax(0, 1fr); }
+.proposal-bar {
+  grid-column: 1 / -1;
+  display: flex; justify-content: center; gap: 8px;
+  padding: 0 0 10px;
+}
+.proposal {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 1px;
+  padding: 6px 14px; border: 1px solid var(--line-strong); border-radius: 4px;
+  background: var(--surface); cursor: pointer; color: var(--muted); text-align: left;
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+.proposal:hover { color: var(--navy); background: var(--bg); }
+.proposal.is-active { color: var(--blue-dark); border-color: var(--blue-dark); background: var(--blue-tint); }
+.proposal-name {
+  font-family: var(--font-display); font-weight: 600; font-size: 13.5px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.proposal-desc { font-size: 11.5px; color: var(--muted); }
+.proposal.is-active .proposal-desc { color: var(--blue-deep); }
