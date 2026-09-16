@@ -93,7 +93,7 @@ ESM.plants = ESM.plants || {};
   function smallPlant(id, name, boxes) {
     return {
       id, name: name || 'Planta adicional', short: name, status: 'ready', hideCounts: true,
-      subtitle: 'Propuesta 2 · tres plantas',
+      subtitle: 'Propuesta 2 · dos plantas',
       note: 'Distribución conceptual. Sin escala.',
       canvas: { w: PW, h: 848 }, perimeter: { x: 0, y: 0, w: PW, h: 848 },
       annotations: [], areas: boxes

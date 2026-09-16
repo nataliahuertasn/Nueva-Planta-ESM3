@@ -174,7 +174,7 @@
     const futuro = state.scenario === 'futuro';
     stage.classList.toggle('is-futuro', futuro);
     const hostMega = futuro ? proposalBlock(stage, 1, 'Mega planta integrada') : stage;
-    const hostTres = futuro ? proposalBlock(stage, 2, 'Tres plantas independientes') : stage;
+    const hostTres = futuro ? proposalBlock(stage, 2, 'Dos plantas independientes') : stage;
 
     plants.forEach(p => {
       const card = h('section', 'plant-card' + (state.focusPlant && state.focusPlant !== p.id ? ' is-muted' : ''));
