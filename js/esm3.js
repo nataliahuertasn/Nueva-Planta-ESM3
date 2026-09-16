@@ -92,7 +92,7 @@ ESM.plants = ESM.plants || {};
   const PW = X0 + W + X0;   // ancho de cada planta: una sola columna
   function smallPlant(id, name, boxes) {
     return {
-      id, name, short: name, status: 'ready', hideCounts: true,
+      id, name: name || 'Planta adicional', short: name, status: 'ready', hideCounts: true,
       subtitle: 'Propuesta 2 · tres plantas',
       note: 'Distribución conceptual. Sin escala.',
       canvas: { w: PW, h: 848 }, perimeter: { x: 0, y: 0, w: PW, h: 848 },
@@ -126,7 +126,7 @@ ESM.plants = ESM.plants || {};
     box('e3-logistica', 'Logística', 0, 11, { double: true })
   ]);
 
-  ESM.plants.esm3c = smallPlant('esm3c', 'Planta 3', [
+  ESM.plants.esm3c = smallPlant('esm3c', '', [
     box('e3-almacen-hpl', 'Almacén / lámina HPL', 0, 0),
     box('e3-sierra-vertical', 'Sierra vertical', 0, 1),
     box('e3-cnc-lamina-hpl', 'Mecanizado CNC / lámina', 0, 4),

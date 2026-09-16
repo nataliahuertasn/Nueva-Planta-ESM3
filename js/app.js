@@ -12,7 +12,6 @@
   const state = {
     scenario: 'actual',
     focusPlant: null,  // planta destacada dentro del escenario (la otra se atenúa)
-    proposal: 'mega',  // ESM 3: 'mega' (Propuesta 1) | 'tres' (Propuesta 2)
     line: null,        // id de línea de negocio activa
     products: [],      // ids de los productos (flujos) activos dentro de la línea
     selected: null,    // { plant, id }
@@ -104,13 +103,18 @@
     return l.products.map((p, idx) => ({ product: p, idx })).filter(x => state.products.includes(x.product.id));
   }
 
-  /* Recorrido de un producto en el escenario activo (actual: route · futuro: route3) */
-  function routeOf(product) {
-    if (state.scenario !== 'futuro') return product.route || [];
+  /* Recorridos de un producto en el escenario activo:
+     actual → [route] · futuro → [route3 en la mega planta, route3 repartido
+     entre las tres plantas de la Propuesta 2] */
+  function routesOf(product) {
+    if (state.scenario !== 'futuro') return [product.route || []];
     const r3 = product.route3 || [];
-    if (state.proposal !== 'tres') return r3;
-    // Propuesta 2: el paso va a la planta que tiene el proceso; si está en
-    // varias, se queda en la planta del paso anterior (traslados mínimos)
+    return r3.length ? [r3, toThreePlants(r3)] : [];
+  }
+
+  /* Propuesta 2: cada paso va a la planta que tiene el proceso; si está en
+     varias, se queda en la planta del paso anterior (traslados mínimos) */
+  function toThreePlants(r3) {
     let prev = null;
     return r3.map(step => {
       const areas = step.areas || [step.area];
@@ -129,7 +133,7 @@
 
   /* Ilumina las áreas del recorrido del producto activo y atenúa el resto */
   function applyRoute() {
-    const route = activeProducts().flatMap(x => routeOf(x.product));
+    const route = activeProducts().flatMap(x => routesOf(x.product).flat());
     Object.values(state.views).forEach(v => {
       Object.keys(v.nodes).forEach(id => {
         if (!route.length) { v.setState(id, null); return; }
@@ -143,8 +147,22 @@
   const THREE = ['esm3a', 'esm3b', 'esm3c'];   // Propuesta 2 de ESM 3
   function readyPlants() {
     const sc = D.scenarios.find(s => s.id === state.scenario);
-    const ids = (sc.id === 'futuro' && state.proposal === 'tres') ? THREE : sc.plants;
+    // ESM 3 muestra las dos propuestas a la vez: la mega planta y las tres plantas
+    const ids = sc.id === 'futuro' ? sc.plants.concat(THREE) : sc.plants;
     return ids.map(id => D.plants[id]).filter(p => p && p.status === 'ready');
+  }
+
+  /* Bloque de propuesta en ESM 3: título + fila de plantas */
+  function proposalBlock(stage, n, name) {
+    const block = h('section', 'proposal-block');
+    const title = h('div', 'proposal-title');
+    title.appendChild(h('span', 'proposal-n', 'Propuesta ' + n));
+    title.appendChild(h('span', 'proposal-name', name));
+    block.appendChild(title);
+    const row = h('div', 'proposal-plants');
+    block.appendChild(row);
+    stage.appendChild(block);
+    return row;
   }
 
   function renderStage() {
@@ -153,8 +171,10 @@
     state.views = {};
     const plants = readyPlants();
     stage.style.setProperty('--plants', plants.length || 1);
-    stage.classList.toggle('is-futuro', state.scenario === 'futuro');
-    if (state.scenario === 'futuro') stage.appendChild(proposalSwitch());
+    const futuro = state.scenario === 'futuro';
+    stage.classList.toggle('is-futuro', futuro);
+    const hostMega = futuro ? proposalBlock(stage, 1, 'Mega planta integrada') : stage;
+    const hostTres = futuro ? proposalBlock(stage, 2, 'Tres plantas independientes') : stage;
 
     plants.forEach(p => {
       const card = h('section', 'plant-card' + (state.focusPlant && state.focusPlant !== p.id ? ' is-muted' : ''));
@@ -162,7 +182,8 @@
 
       const head = h('header', 'plant-head');
       const title = h('div', 'plant-title');
-      title.appendChild(h('h2', 'plant-name', p.short || p.name));
+      // nombre vacío (p. ej. la planta sin nombre de la Propuesta 2): se conserva la altura
+      title.appendChild(h('h2', 'plant-name', p.short === '' ? ' ' : (p.short || p.name)));
       head.appendChild(title);
 
       if (!p.hideCounts) {
@@ -181,22 +202,8 @@
       state.views[p.id] = view;
       wireNodes(view);
 
-      stage.appendChild(card);
+      (THREE.includes(p.id) ? hostTres : hostMega).appendChild(card);
     });
-  }
-
-  /* Propuesta 1 (mega planta) / Propuesta 2 (tres plantas) para ESM 3 */
-  function proposalSwitch() {
-    const bar = h('div', 'proposal-bar');
-    [['mega', 'Propuesta 1', 'Mega planta integrada'], ['tres', 'Propuesta 2', 'Tres plantas independientes']].forEach(([id, name, desc]) => {
-      const b = h('button', 'proposal' + (state.proposal === id ? ' is-active' : ''));
-      b.type = 'button';
-      b.appendChild(h('span', 'proposal-name', name));
-      b.appendChild(h('span', 'proposal-desc', desc));
-      b.addEventListener('click', () => { if (state.proposal !== id) { state.proposal = id; render(); } });
-      bar.appendChild(b);
-    });
-    return bar;
   }
 
   /* Máquinas rotuladas + maquinaria dibujada dentro de áreas (symbol / benches) */
@@ -354,11 +361,14 @@
   function renderFlow() {
     const stage = $('#stage');
     ESM.clearFlow(stage);
-    const active = activeProducts().filter(x => routeOf(x.product).length);
+    const active = activeProducts().filter(x => routesOf(x.product).length);
     if (active.length) {
       // esperar al layout para medir las áreas (setTimeout: también en pestañas en segundo plano)
-      setTimeout(() => active.forEach((x, n) =>
-        ESM.drawFlow(stage, routeOf(x.product), state.views, { color: x.idx, layer: n, append: n > 0 })), 0);
+      setTimeout(() => {
+        let k = 0;
+        active.forEach((x, n) => routesOf(x.product).forEach(r =>
+          ESM.drawFlow(stage, r, state.views, { color: x.idx, layer: n, append: k++ > 0 })));
+      }, 0);
     }
   }
 
