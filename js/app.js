@@ -104,15 +104,15 @@
   }
 
   /* Recorridos de un producto en el escenario activo:
-     actual → [route] · futuro → [route3 en la mega planta, route3 repartido
-     entre las tres plantas de la Propuesta 2] */
+     actual → [route] · futuro → [route3 en la mega planta (Propuesta 2), route3 repartido
+     entre las plantas de la Propuesta 1] */
   function routesOf(product) {
     if (state.scenario !== 'futuro') return [product.route || []];
     const r3 = product.route3 || [];
     return r3.length ? [r3, toThreePlants(r3)] : [];
   }
 
-  /* Propuesta 2: cada paso va a la planta que tiene el proceso; si está en
+  /* Propuesta 1: cada paso va a la planta que tiene el proceso; si está en
      varias, se queda en la planta del paso anterior (traslados mínimos) */
   function toThreePlants(r3) {
     let prev = null;
@@ -144,10 +144,10 @@
   }
 
   /* ---------- Escenario: plantas listas del escenario activo ---------- */
-  const THREE = ['esm3a', 'esm3b', 'esm3c'];   // Propuesta 2 de ESM 3
+  const THREE = ['esm3a', 'esm3b', 'esm3c'];   // Propuesta 1 de ESM 3 (dos plantas independientes)
   function readyPlants() {
     const sc = D.scenarios.find(s => s.id === state.scenario);
-    // ESM 3 muestra las dos propuestas a la vez: la mega planta y las tres plantas
+    // ESM 3 muestra las dos propuestas a la vez: Propuesta 1 (dos plantas) y Propuesta 2 (mega planta)
     const ids = sc.id === 'futuro' ? sc.plants.concat(THREE) : sc.plants;
     return ids.map(id => D.plants[id]).filter(p => p && p.status === 'ready');
   }
@@ -173,8 +173,8 @@
     stage.style.setProperty('--plants', plants.length || 1);
     const futuro = state.scenario === 'futuro';
     stage.classList.toggle('is-futuro', futuro);
-    const hostMega = futuro ? proposalBlock(stage, 1, 'Mega planta integrada') : stage;
-    const hostTres = futuro ? proposalBlock(stage, 2, 'Dos plantas independientes') : stage;
+    const hostTres = futuro ? proposalBlock(stage, 1, 'Dos plantas independientes') : stage;
+    const hostMega = futuro ? proposalBlock(stage, 2, 'Mega planta integrada') : stage;
 
     plants.forEach(p => {
       const card = h('section', 'plant-card' + (state.focusPlant && state.focusPlant !== p.id ? ' is-muted' : ''));
@@ -182,7 +182,7 @@
 
       const head = h('header', 'plant-head');
       const title = h('div', 'plant-title');
-      // nombre vacío (p. ej. la planta sin nombre de la Propuesta 2): se conserva la altura
+      // nombre vacío (p. ej. la planta sin nombre de la Propuesta 1): se conserva la altura
       title.appendChild(h('h2', 'plant-name', p.short === '' ? ' ' : (p.short || p.name)));
       head.appendChild(title);
 

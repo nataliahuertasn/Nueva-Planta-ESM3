@@ -34,7 +34,7 @@ ESM.plants = ESM.plants || {};
     id: 'esm3',
     name: 'ES Metals 3',
     short: 'ESM 3',
-    subtitle: 'Planta macro integrada',
+    subtitle: 'Propuesta 2 · planta macro integrada',
     hideCounts: true,
     status: 'ready',
     note: 'Diagrama de procesos de la planta integrada. Sin escala.',
@@ -84,7 +84,7 @@ ESM.plants = ESM.plants || {};
   };
 
   /* =====================================================================
-     Propuesta 2 — tres plantas independientes (misma retícula de filas)
+     Propuesta 1 — dos plantas independientes (misma retícula de filas)
      Planta 1: línea de lámina · Planta 2: línea de perfiles ·
      Planta 3: línea de lámina HPL. Los procesos compartidos se repiten en
      la planta donde tienen más sentido (Soldadura solo en Planta 1).
@@ -93,7 +93,7 @@ ESM.plants = ESM.plants || {};
   function smallPlant(id, name, boxes) {
     return {
       id, name: name || 'Planta adicional', short: name, status: 'ready', hideCounts: true,
-      subtitle: 'Propuesta 2 · dos plantas',
+      subtitle: 'Propuesta 1 · dos plantas',
       note: 'Distribución conceptual. Sin escala.',
       canvas: { w: PW, h: 848 }, perimeter: { x: 0, y: 0, w: PW, h: 848 },
       annotations: [], areas: boxes
