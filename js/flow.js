@@ -357,14 +357,17 @@ window.ESM = window.ESM || {};
     el('path', { d, class: 'flow-halo' }, g);
     const line = el('path', { d, class: 'flow-line' }, g);
     drawIn(line, delay);
+    // con las flechas ocultas (ESM 3) la longitud es 0 y no hay punta que ubicar
     const len = line.getTotalLength();
-    const p1 = line.getPointAtLength(Math.max(0, len - 6)), p2 = line.getPointAtLength(len);
-    const ang = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
-    const head = el('path', {
-      d: 'M-7 -3.5 L0 0 L-7 3.5 Z', class: 'flow-head',
-      transform: `translate(${p2.x} ${p2.y}) rotate(${ang})`
-    }, g);
-    fadeIn(head, delay + STEP_MS * 0.6);
+    if (len > 0) {
+      const p1 = line.getPointAtLength(Math.max(0, len - 6)), p2 = line.getPointAtLength(len);
+      const ang = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
+      const head = el('path', {
+        d: 'M-7 -3.5 L0 0 L-7 3.5 Z', class: 'flow-head',
+        transform: `translate(${p2.x} ${p2.y}) rotate(${ang})`
+      }, g);
+      fadeIn(head, delay + STEP_MS * 0.6);
+    }
     // zona de acierto para encender la flecha con el cursor
     const hit = el('path', { d, class: 'flow-hit' }, g);
     hit.addEventListener('mouseenter', () => g.classList.add('is-lit'));
