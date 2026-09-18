@@ -100,7 +100,7 @@ ESM.plants = ESM.plants || {};
     };
   }
 
-  ESM.plants.esm3a = smallPlant('esm3a', 'Planta 1', [
+  ESM.plants.esm3a = smallPlant('esm3a', 'ESM 1', [
     box('e3-almacen-lamina', 'Almacén / lámina', 0, 0),
     box('e3-punzonado', 'Punzonado', 0, 1),
     box('e3-laser-lamina', 'Láser lámina', 0, 2),
