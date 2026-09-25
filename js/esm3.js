@@ -2,7 +2,7 @@
    ES Metals 3 — planta macro integrada (escenario futuro)
    ---------------------------------------------------------------------
    Reproduce el diagrama de procesos suministrado (2026-09-14): tres
-   columnas (Perfiles, Lámina, Lámina HPL) con el flujo de arriba hacia
+   columnas (Lámina, Perfiles, Lámina HPL) con el flujo de arriba hacia
    abajo y áreas únicas compartidas con doble borde (Soldadura, Pintura,
    Ensamble, Despacho). Sin escala ni dimensiones.
 
@@ -35,45 +35,45 @@ ESM.plants = ESM.plants || {};
     name: 'ES Metals 3',
     short: 'ESM 3',
     subtitle: 'Propuesta 2 · planta macro integrada',
-    hideCounts: true,
     status: 'ready',
     note: 'Diagrama de procesos de la planta integrada. Sin escala.',
     canvas: { w: 700, h: 848 },
     perimeter: { x: 0, y: 0, w: 700, h: 848 },
     annotations: [],
 
+    /* Columnas: 0 lámina · 1 perfiles · 2 lámina HPL */
     areas: [
       /* fila 0: almacenes */
-      box('e3-almacen-perfiles', 'Almacén / perfiles', 0, 0),
-      box('e3-almacen-lamina', 'Almacén / lámina', 1, 0),
+      box('e3-almacen-lamina', 'Almacén / lámina', 0, 0),
+      box('e3-almacen-perfiles', 'Almacén / perfiles', 1, 0),
       box('e3-almacen-hpl', 'Almacén / lámina HPL', 2, 0),
 
       /* fila 1 */
-      box('e3-cortadora-perfiles', 'Cortadora de / perfiles', 0, 1),
-      box('e3-punzonado', 'Punzonado', 1, 1),
+      box('e3-punzonado', 'Punzonado', 0, 1),
+      box('e3-cortadora-perfiles', 'Cortadora de / perfiles', 1, 1),
       box('e3-sierra-vertical', 'Sierra vertical', 2, 1),
 
       /* fila 2 */
-      box('e3-cnc-perfiles', 'Mecanizado CNC / perfiles', 0, 2),
-      box('e3-laser-lamina', 'Láser lámina', 1, 2),
+      box('e3-laser-lamina', 'Láser lámina', 0, 2),
+      box('e3-cnc-perfiles', 'Mecanizado CNC / perfiles', 1, 2),
 
       /* fila 3 */
-      box('e3-enderezadora', 'Enderezadora', 1, 3),
+      box('e3-enderezadora', 'Enderezadora', 0, 3),
 
       /* fila 4 */
-      box('e3-cnc-lamina', 'Mecanizado CNC / lámina', 1, 4),
+      box('e3-cnc-lamina', 'Mecanizado CNC / lámina', 0, 4),
       box('e3-cnc-lamina-hpl', 'Mecanizado CNC / lámina', 2, 4),
 
       /* fila 5 */
-      box('e3-dobladora', 'Dobladora', 1, 5),
+      box('e3-dobladora', 'Dobladora', 0, 5),
       box('e3-planks', 'Mecanizado / planks', 2, 5),
 
       /* áreas compartidas (doble borde) */
       box('e3-soldadura', 'Soldadura', 0, 6, { spanCols: 2, double: true }),
       box('e3-pintura-liquida', 'Pintura líquida', 0, 7, { spanCols: 2, double: true }),
       box('e3-pintura-polvo', 'Pintura en polvo', 0, 8, { spanCols: 2, double: true }),
-      box('e3-sublimado-perfiles', 'Sublimado / perfiles', 0, 9),
-      box('e3-sublimado-lamina', 'Sublimado / lámina', 1, 9),
+      box('e3-sublimado-lamina', 'Sublimado / lámina', 0, 9),
+      box('e3-sublimado-perfiles', 'Sublimado / perfiles', 1, 9),
       box('e3-ensamble', 'Ensamble', 0, 10, { spanCols: 2, double: true }),
       box('e3-logistica', 'Logística', 0, 11, { spanCols: 2, double: true }),
 
@@ -92,7 +92,7 @@ ESM.plants = ESM.plants || {};
   const PW = X0 + W + X0;   // ancho de cada planta: una sola columna
   function smallPlant(id, name, boxes) {
     return {
-      id, name: name || 'Planta adicional', short: name, status: 'ready', hideCounts: true,
+      id, name: name || 'Planta adicional', short: name, status: 'ready',
       subtitle: 'Propuesta 1 · dos plantas',
       note: 'Distribución conceptual. Sin escala.',
       canvas: { w: PW, h: 848 }, perimeter: { x: 0, y: 0, w: PW, h: 848 },

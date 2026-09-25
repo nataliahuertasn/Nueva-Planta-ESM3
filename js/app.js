@@ -186,12 +186,6 @@
       title.appendChild(h('h2', 'plant-name', p.short === '' ? ' ' : (p.short || p.name)));
       head.appendChild(title);
 
-      if (!p.hideCounts) {
-        const counts = h('div', 'plant-counts');
-        counts.appendChild(countTile(p.areas.filter(a => a.kind === 'area').length, 'áreas de proceso'));
-        counts.appendChild(countTile(machineCount(p), 'máquinas'));
-        head.appendChild(counts);
-      }
       card.appendChild(head);
 
       const host = h('div', 'plant-host');
@@ -204,22 +198,6 @@
 
       (THREE.includes(p.id) ? hostTres : hostMega).appendChild(card);
     });
-  }
-
-  /* Máquinas rotuladas + maquinaria dibujada dentro de áreas (symbol / benches) */
-  function machineCount(p) {
-    return p.areas.reduce((n, a) => {
-      if (a.kind === 'machine') return n + 1;
-      return n + (a.children || []).reduce((m, c) =>
-        m + (c.type === 'symbol' ? 1 : c.type === 'benches' ? c.count : 0), 0);
-    }, 0);
-  }
-
-  function countTile(n, label) {
-    const t = h('div', 'count');
-    t.appendChild(h('span', 'count-n', String(n)));
-    t.appendChild(h('span', 'count-l', label));
-    return t;
   }
 
   function wireNodes(view) {
@@ -374,6 +352,7 @@
 
   function render() {
     renderScenarioNav();
+    renderPrintNav();
     renderLines();
     renderStage();
     fitPlants();
@@ -386,9 +365,23 @@
   /* El marco de cada plano toma el alto disponible; su ancho sigue la
      proporción del plano para que nunca haya que desplazarse. */
   function fitPlants() {
-    document.querySelectorAll('.plant-host').forEach(host => {
-      const ratio = parseFloat(host.dataset.ratio);
-      host.closest('.plant-card').style.setProperty('--fit-w', (host.clientHeight * ratio) + 'px');
+    const cards = [...document.querySelectorAll('#stage .plant-card')];
+    cards.forEach(card => {
+      const host = card.querySelector('.plant-host');
+      host.style.height = '';
+      card.style.setProperty('--fit-w', (host.clientHeight * parseFloat(host.dataset.ratio)) + 'px');
+    });
+    // si los planos no caben a lo ancho (p. ej. las dos propuestas de ESM 3),
+    // se reducen en proporción para que nunca haya que desplazarse
+    const stage = $('#stage');
+    const k = stage.clientWidth / Math.max(stage.scrollWidth, 1);
+    if (k >= 0.999) return;
+    // se miden todos los altos antes de tocarlos: cambiar uno reordena la fila
+    const heights = cards.map(card => card.querySelector('.plant-host').clientHeight * k);
+    cards.forEach((card, i) => {
+      const host = card.querySelector('.plant-host');
+      host.style.height = heights[i] + 'px';
+      card.style.setProperty('--fit-w', (heights[i] * parseFloat(host.dataset.ratio)) + 'px');
     });
   }
 
@@ -396,6 +389,242 @@
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => { fitPlants(); renderFlow(); }, 150);
+  });
+
+  /* =====================================================================
+     Impresión / PDF — tabloide horizontal (11 × 17 pulgadas)
+     ---------------------------------------------------------------------
+     Cada vista se arma en hojas propias fuera de pantalla (mismo dibujo de
+     plantas, filtros y recorridos) y se envía a imprimir. En el diálogo del
+     navegador: destino «Guardar como PDF», tamaño «Tabloide», horizontal.
+     ES Metals 3 imprime cada propuesta en su propia hoja.
+     ===================================================================== */
+  const SHEET = { long: 431.8, short: 279.4, margin: 9 };   // tabloide (11 × 17 pulg.)
+  const PRINT_GAP = 16, PRINT_RESERVED = 100;               // separación y cabecera + rótulo
+  const mmToPx = mm => mm * 96 / 25.4;
+
+  /* Área útil de la hoja, horizontal o vertical */
+  function sheetBox(portrait) {
+    return {
+      w: mmToPx((portrait ? SHEET.short : SHEET.long) - 2 * SHEET.margin),
+      h: mmToPx((portrait ? SHEET.long : SHEET.short) - 2 * SHEET.margin),
+      portrait
+    };
+  }
+
+  /* Alto de plano que cabe en una hoja: manda el lado más restrictivo */
+  function fitHost(spec, box) {
+    const total = spec.plants.reduce((s, p) => s + p.canvas.w / p.canvas.h, 0);
+    return Math.min(box.h - PRINT_RESERVED,
+                    (box.w - PRINT_GAP * (spec.plants.length - 1)) / total);
+  }
+
+  function renderPrintNav() {
+    const nav = $('#print-nav');
+    if (!nav) return;
+    nav.innerHTML = '';
+    const futuro = state.scenario === 'futuro';
+    const grp = h('div', 'print-group');
+    grp.appendChild(h('span', 'print-label', 'Imprimir'));
+    grp.appendChild(printBtn('todo', 'PDF', futuro
+      ? 'Imprimir las dos propuestas, cada una en su hoja (tabloide horizontal)'
+      : 'Imprimir la vista actual con los filtros aplicados (tabloide horizontal)', true));
+    if (futuro) {
+      grp.appendChild(printBtn('p1', '1', 'Imprimir solo la Propuesta 1 · dos plantas independientes'));
+      grp.appendChild(printBtn('p2', '2', 'Imprimir solo la Propuesta 2 · mega planta integrada'));
+    }
+    nav.appendChild(grp);
+  }
+
+  function printBtn(which, text, title, icon) {
+    const b = h('button', 'print-btn' + (icon ? '' : ' print-btn--n'));
+    b.type = 'button';
+    b.title = title;
+    if (icon) b.appendChild(printerIcon());
+    b.appendChild(h('span', null, text));
+    b.addEventListener('click', () => printView(which));
+    return b;
+  }
+
+  function printerIcon() {
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 16 16');
+    svg.setAttribute('class', 'print-icon');
+    svg.setAttribute('aria-hidden', 'true');
+    ['M4.75 6.25V2.75h6.5v3.5',
+     'M11.25 11.75h1.5a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-9.5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h1.5',
+     'M4.75 9.75h6.5v3.5h-6.5z'].forEach(d => {
+      const p = document.createElementNS(NS, 'path');
+      p.setAttribute('d', d);
+      svg.appendChild(p);
+    });
+    return svg;
+  }
+
+  /* Hojas de la vista activa: en ESM 3, una por propuesta */
+  function printSpecs(which) {
+    if (state.scenario !== 'futuro') {
+      const plants = readyPlants().filter(p => !state.focusPlant || p.id === state.focusPlant);
+      return [{
+        eyebrow: 'Situación actual',
+        title: plants.map(p => p.name).join('  ·  '),
+        plants, pick: 0, futuro: false
+      }];
+    }
+    const specs = [];
+    if (which !== 'p2') specs.push({
+      eyebrow: 'ES Metals 3 · Propuesta 1', title: 'Dos plantas independientes',
+      plants: THREE.map(id => D.plants[id]).filter(p => p && p.status === 'ready'), pick: 1, futuro: true
+    });
+    if (which !== 'p1') specs.push({
+      eyebrow: 'ES Metals 3 · Propuesta 2', title: 'Mega planta integrada',
+      plants: [D.plants.esm3], pick: 0, futuro: true
+    });
+    return specs;
+  }
+
+  /* Filtros aplicados, tal como se leen en la franja superior */
+  function printLegend() {
+    const box = h('div', 'print-legend');
+    const line = currentLine();
+    const active = activeProducts();
+    if (!line) box.appendChild(h('span', 'print-filter', 'Sin línea seleccionada'));
+    else {
+      box.appendChild(h('span', 'print-filter', 'Línea de negocio: ' + line.name));
+      if (active.length) {
+        const row = h('div', 'print-flows');
+        active.forEach(x => {
+          const tag = h('span', 'print-flow flow-color-' + x.idx);
+          tag.appendChild(h('span', 'print-dot'));
+          tag.appendChild(h('span', null, x.product.name));
+          row.appendChild(tag);
+        });
+        box.appendChild(row);
+      }
+    }
+    box.appendChild(h('span', 'print-date',
+      new Date().toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })));
+    return box;
+  }
+
+  /* Tamaño de papel del trabajo de impresión (tabloide, en la orientación elegida) */
+  function pageRule(portrait) {
+    let st = document.getElementById('print-page-rule');
+    if (!st) {
+      st = document.createElement('style');
+      st.id = 'print-page-rule';
+      document.head.appendChild(st);
+    }
+    st.textContent = '@page { size: ' +
+      (portrait ? SHEET.short + 'mm ' + SHEET.long : SHEET.long + 'mm ' + SHEET.short) +
+      'mm; margin: ' + SHEET.margin + 'mm; }';
+  }
+
+  function buildPrint(which) {
+    const root = h('div', 'print-root');
+    root.id = 'print-root';
+    const specs = printSpecs(which).filter(s => s.plants.length);
+    // toda la impresión va en una sola orientación: la que agranda los planos
+    const portrait = specs.length > 0 &&
+      specs.every(s => fitHost(s, sheetBox(true)) > fitHost(s, sheetBox(false)));
+    const size = sheetBox(portrait);
+    pageRule(portrait);
+    const pages = [];
+    specs.forEach(spec => {
+      if (!spec.plants.length) return;
+      const page = h('section', 'print-page');
+      page.style.width = size.w + 'px';
+      page.style.height = size.h + 'px';
+
+      const head = h('header', 'print-head');
+      const logo = document.createElement('img');
+      logo.className = 'print-logo';
+      logo.alt = 'ES Metals';
+      const brand = $('.brand-logo');
+      logo.src = brand ? brand.src : 'assets/logo.png';
+      head.appendChild(logo);
+      const titles = h('div', 'print-titles');
+      titles.appendChild(h('span', 'print-eyebrow', spec.eyebrow));
+      titles.appendChild(h('h1', 'print-title', spec.title));
+      head.appendChild(titles);
+      head.appendChild(printLegend());
+      page.appendChild(head);
+
+      const stage = h('div', 'stage print-stage' + (spec.futuro ? ' is-futuro' : ''));
+      page.appendChild(stage);
+      root.appendChild(page);
+      pages.push({ spec, page, stage, size });
+    });
+    document.body.appendChild(root);
+    pages.forEach(drawPrintPage);
+    return root;
+  }
+
+  /* Dibuja una hoja: plantas ajustadas al alto disponible y recorridos */
+  function drawPrintPage(pg) {
+    const { spec, page, stage, size } = pg;
+    const headH = page.querySelector('.print-head').getBoundingClientRect().height;
+    const TITLE_H = 34;
+    const availW = size.w, availH = size.h - headH - TITLE_H - 14;
+    const ratios = spec.plants.map(p => p.canvas.w / p.canvas.h);
+    const total = ratios.reduce((a, b) => a + b, 0);
+    const hostH = Math.min(availH, (availW - PRINT_GAP * (spec.plants.length - 1)) / total);
+
+    const views = {};
+    spec.plants.forEach((p, i) => {
+      const card = h('section', 'plant-card');
+      card.dataset.plant = p.id;
+      card.style.setProperty('--fit-w', (hostH * ratios[i]) + 'px');
+      const head = h('header', 'plant-head');
+      const title = h('div', 'plant-title');
+      title.appendChild(h('h2', 'plant-name', p.short === '' ? ' ' : (p.short || p.name)));
+      head.appendChild(title);
+      card.appendChild(head);
+      const host = h('div', 'plant-host');
+      host.style.width = (hostH * ratios[i]) + 'px';
+      host.style.height = hostH + 'px';
+      card.appendChild(host);
+      stage.appendChild(card);
+      views[p.id] = ESM.renderPlant(p, host);
+    });
+
+    const routes = activeProducts()
+      .map(x => ({ idx: x.idx, steps: routesOf(x.product)[spec.pick] || [] }))
+      .filter(r => r.steps.length);
+
+    Object.values(views).forEach(v => {
+      Object.keys(v.nodes).forEach(id => {
+        if (!routes.length) { v.setState(id, null); return; }
+        const on = routes.some(r => r.steps.some(s =>
+          s.plant === v.plant.id && stepAreas(v.plant, s).includes(id)));
+        v.setState(id, on ? 'active' : 'dim');
+      });
+    });
+
+    let k = 0;
+    routes.forEach((r, n) => ESM.drawFlow(stage, r.steps, views, { color: r.idx, layer: n, append: k++ > 0 }));
+  }
+
+  function clearPrint() {
+    const r = document.getElementById('print-root');
+    if (r) r.remove();
+  }
+
+  function printView(which) {
+    clearPrint();
+    buildPrint(which);
+    setTimeout(() => window.print(), 120);
+  }
+
+  // Ctrl/Cmd + P y el menú del navegador imprimen la vista activa completa
+  window.addEventListener('beforeprint', () => { if (!document.getElementById('print-root')) buildPrint('todo'); });
+  window.addEventListener('afterprint', clearPrint);
+  window.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 'p') {
+      e.preventDefault();
+      printView('todo');
+    }
   });
 
   render();

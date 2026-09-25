@@ -213,13 +213,6 @@ button { font: inherit; color: inherit; }
   font-family: var(--font-display); font-weight: 600; font-size: 24px; line-height: 1;
   letter-spacing: 0.02em; text-transform: uppercase; white-space: nowrap; color: var(--blue-dark);
 }
-.plant-counts { display: flex; gap: 18px; }
-.count { display: flex; align-items: baseline; gap: 5px; }
-.count-n {
-  font-family: var(--font-display); font-weight: 500; font-size: 18px; line-height: 1;
-  font-variant-numeric: tabular-nums; color: var(--navy);
-}
-.count-l { font-size: 11px; color: var(--muted); letter-spacing: 0.02em; }
 
 .plant-host {
   --ratio: 1;
@@ -529,3 +522,84 @@ button { font: inherit; color: inherit; }
 .proposal-plants { display: flex; gap: 10px; flex: 1; min-height: 0; }
 .stage.is-futuro .plant-card { width: var(--fit-w); flex: 0 0 auto; }
 .stage.is-futuro .plant-card + .plant-card { border-left: 0; padding-left: 0; margin-left: 0; }
+
+/* =====================================================================
+   Impresión / PDF — tabloide horizontal (11 × 17 pulgadas)
+   ===================================================================== */
+.topbar { grid-template-columns: auto 1fr auto auto; }
+.print-nav { display: flex; align-items: center; padding-left: 16px; margin-left: 2px; border-left: 1px solid var(--line); }
+.print-group { display: inline-flex; align-items: center; gap: 7px; }
+.print-label {
+  font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--soft);
+}
+.print-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid var(--line-strong); border-radius: 4px;
+  background: var(--surface); color: var(--slate);
+  font-family: var(--font-display); font-weight: 600; font-size: 12.5px;
+  letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; cursor: pointer;
+  transition: color 150ms ease, border-color 150ms ease, background-color 150ms ease;
+}
+.print-btn:hover { color: var(--blue-dark); border-color: var(--blue-dark); background: var(--blue-tint); }
+.print-btn--n {
+  padding: 3px 0; width: 26px; justify-content: center;
+  font-family: var(--font-mono); font-weight: 500; font-size: 11px; letter-spacing: 0;
+}
+.print-icon { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.2; stroke-linejoin: round; }
+
+/* Hojas: se arman fuera de pantalla y solo ellas se imprimen */
+.print-root { position: fixed; top: 0; left: -30000px; z-index: -1; background: #fff; }
+.print-page { background: #fff; display: flex; flex-direction: column; overflow: hidden; }
+.print-head { display: flex; align-items: center; gap: 20px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.print-logo { height: 26px; width: auto; display: block; }
+.print-titles { display: flex; flex-direction: column; gap: 2px; margin-right: auto; min-width: 0; }
+.print-eyebrow {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--blue-dark);
+}
+.print-title {
+  margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 21px; line-height: 1.05;
+  letter-spacing: 0.02em; text-transform: uppercase; color: var(--navy);
+}
+.print-legend { display: flex; align-items: center; gap: 16px; font-size: 11px; color: var(--muted); }
+.print-flows { display: flex; gap: 14px; }
+.print-flow { display: inline-flex; align-items: center; gap: 5px; color: var(--flow, var(--slate)); }
+.print-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--flow, var(--slate)); }
+.print-date { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.04em; color: var(--soft); }
+
+.stage.print-stage {
+  display: flex; grid-template-columns: none;
+  align-items: center; justify-content: center;
+  gap: 16px; padding: 12px 0 0; flex: 1; min-height: 0;
+}
+.print-stage .plant-card { flex: 0 0 auto; width: auto; }
+.print-stage .plant-card + .plant-card { border-left: 0; padding-left: 0; margin-left: 0; }
+.print-stage .plant-head { justify-content: flex-start; }
+.print-stage .plant-name { font-size: 20px; }
+.print-stage .plant-host { box-shadow: none; }
+
+/* En papel el recorrido va a color pleno (en pantalla reposa en tono suave) */
+.print-page .flow-frames .flow-frame { stroke: var(--flow); }
+.print-page .flow-links .flow-line { stroke: var(--flow); }
+.print-page .flow-links .flow-head { fill: var(--flow); }
+.print-page .flow-badges .flow-badge-bg { stroke: var(--flow); }
+.print-page .flow-badges .flow-badge-n { fill: var(--flow); }
+.print-page.is-futuro .flow-frame, .print-page .is-futuro .flow-frame { fill: var(--flow); fill-opacity: 0.12; }
+
+@page { size: 431.8mm 279.4mm; margin: 9mm; }
+
+@media print {
+  html, body { height: auto; background: #fff; }
+  .app { display: none !important; }
+  .print-root { position: static !important; left: auto !important; z-index: auto !important; }
+  .print-page { break-after: page; page-break-after: always; break-inside: avoid; }
+  .print-page:last-child { break-after: auto; page-break-after: auto; }
+  .print-root, .print-page, .print-page * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  /* el papel no anima: trazos completos y números visibles */
+  .print-page .flow-draw { animation: none !important; stroke-dashoffset: 0 !important; }
+  .print-page .flow-fade { animation: none !important; }
+  .print-page .flow-badge, .print-page .flow-head { opacity: 1 !important; }
+  .print-page .node { animation: none !important; }
+}
