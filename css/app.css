@@ -555,19 +555,10 @@ button { font: inherit; color: inherit; }
 .print-head { display: flex; align-items: center; gap: 20px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
 .print-logo { height: 26px; width: auto; display: block; }
 .print-titles { display: flex; flex-direction: column; gap: 2px; margin-right: auto; min-width: 0; }
-.print-eyebrow {
-  font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--blue-dark);
-}
 .print-title {
   margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 21px; line-height: 1.05;
   letter-spacing: 0.02em; text-transform: uppercase; color: var(--navy);
 }
-.print-legend { display: flex; align-items: center; gap: 16px; font-size: 11px; color: var(--muted); }
-.print-flows { display: flex; gap: 14px; }
-.print-flow { display: inline-flex; align-items: center; gap: 5px; color: var(--flow, var(--slate)); }
-.print-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--flow, var(--slate)); }
-.print-date { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.04em; color: var(--soft); }
 
 .stage.print-stage {
   display: flex; grid-template-columns: none;

@@ -467,45 +467,20 @@
     if (state.scenario !== 'futuro') {
       const plants = readyPlants().filter(p => !state.focusPlant || p.id === state.focusPlant);
       return [{
-        eyebrow: 'Situación actual',
         title: plants.map(p => p.name).join('  ·  '),
         plants, pick: 0, futuro: false
       }];
     }
     const specs = [];
     if (which !== 'p2') specs.push({
-      eyebrow: 'ES Metals 3 · Propuesta 1', title: 'Dos plantas independientes',
+      title: 'Dos plantas independientes',
       plants: THREE.map(id => D.plants[id]).filter(p => p && p.status === 'ready'), pick: 1, futuro: true
     });
     if (which !== 'p1') specs.push({
-      eyebrow: 'ES Metals 3 · Propuesta 2', title: 'Mega planta integrada',
+      title: 'Mega planta integrada',
       plants: [D.plants.esm3], pick: 0, futuro: true
     });
     return specs;
-  }
-
-  /* Filtros aplicados, tal como se leen en la franja superior */
-  function printLegend() {
-    const box = h('div', 'print-legend');
-    const line = currentLine();
-    const active = activeProducts();
-    if (!line) box.appendChild(h('span', 'print-filter', 'Sin línea seleccionada'));
-    else {
-      box.appendChild(h('span', 'print-filter', 'Línea de negocio: ' + line.name));
-      if (active.length) {
-        const row = h('div', 'print-flows');
-        active.forEach(x => {
-          const tag = h('span', 'print-flow flow-color-' + x.idx);
-          tag.appendChild(h('span', 'print-dot'));
-          tag.appendChild(h('span', null, x.product.name));
-          row.appendChild(tag);
-        });
-        box.appendChild(row);
-      }
-    }
-    box.appendChild(h('span', 'print-date',
-      new Date().toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })));
-    return box;
   }
 
   /* Tamaño de papel del trabajo de impresión (tabloide, en la orientación elegida) */
@@ -545,10 +520,8 @@
       logo.src = brand ? brand.src : 'assets/logo.png';
       head.appendChild(logo);
       const titles = h('div', 'print-titles');
-      titles.appendChild(h('span', 'print-eyebrow', spec.eyebrow));
       titles.appendChild(h('h1', 'print-title', spec.title));
       head.appendChild(titles);
-      head.appendChild(printLegend());
       page.appendChild(head);
 
       const stage = h('div', 'stage print-stage' + (spec.futuro ? ' is-futuro' : ''));
