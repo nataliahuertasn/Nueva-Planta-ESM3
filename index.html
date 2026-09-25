@@ -4,9 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ES Metals · Plantas y Procesos</title>
+<script>
+/* Si el navegador guarda una copia vieja de esta página, se compara con la
+   versión publicada (version.txt, sin caché) y se recarga la actual. */
+(function () {
+  var ESM_VERSION = '20260925101550';
+  if (!window.fetch || location.protocol === 'file:') return;
+  fetch('version.txt?t=' + Date.now(), { cache: 'no-store' })
+    .then(function (r) { return r.ok ? r.text() : ''; })
+    .then(function (t) {
+      t = t.trim();
+      if (!t || t === ESM_VERSION) return;
+      try { if (sessionStorage.getItem('esm-reload') === t) return; sessionStorage.setItem('esm-reload', t); } catch (e) { return; }
+      location.replace(location.pathname + '?v=' + t + location.hash);
+    })
+    .catch(function () {});
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="css/app.css?v=91a9695">
+<link rel="stylesheet" href="css/app.css?v=20260925101550">
 </head>
 <body>
 <!-- BODY-START -->
@@ -30,12 +47,12 @@
 
 </div>
 <!-- BODY-END -->
-<script src="js/esm1.js?v=91a9695"></script>
-<script src="js/esm2.js?v=91a9695"></script>
-<script src="js/esm3.js?v=91a9695"></script>
-<script src="js/data.js?v=91a9695"></script>
-<script src="js/render.js?v=91a9695"></script>
-<script src="js/flow.js?v=91a9695"></script>
-<script src="js/app.js?v=91a9695"></script>
+<script src="js/esm1.js?v=20260925101550"></script>
+<script src="js/esm2.js?v=20260925101550"></script>
+<script src="js/esm3.js?v=20260925101550"></script>
+<script src="js/data.js?v=20260925101550"></script>
+<script src="js/render.js?v=20260925101550"></script>
+<script src="js/flow.js?v=20260925101550"></script>
+<script src="js/app.js?v=20260925101550"></script>
 </body>
 </html>
